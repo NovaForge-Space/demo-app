@@ -1,0 +1,55 @@
+{
+  "description": "Curated official NASA reference pages for NovaForge.",
+  "fetched_at": "2026-11-14T07:22:26.097129+00:00",
+  "psi_data_status": "pending study-level selection; no PSI measurements are included here",
+  "sources": [
+    {
+      "slug": "nasa-combustion-science",
+      "status": "ready",
+      "path": "nasa_reference_data/nasa-combustion-science.md",
+      "url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/"
+    },
+    {
+      "slug": "nasa-researchers-guide-combustion",
+      "status": "ready",
+      "path": "nasa_reference_data/nasa-researchers-guide-combustion.md",
+      "url": "https://www.nasa.gov/missions/station/a-researchers-guide-to-combustion-science/"
+    },
+    {
+      "slug": "nasa-mir-fire-1997",
+      "status": "ready",
+      "path": "nasa_reference_data/nasa-mir-fire-1997.md",
+      "url": "https://www.nasa.gov/history/25-years-ago-fire-aboard-space-station-mir/"
+    },
+    {
+      "slug": "nasa-apollo-1",
+      "status": "ready",
+      "path": "nasa_reference_data/nasa-apollo-1.md",
+      "url": "https://sma.nasa.gov/sma-disciplines/accllp/apollo-1"
+    },
+    {
+      "slug": "nasa-apollo-13",
+      "status": "ready",
+      "path": "nasa_reference_data/nasa-apollo-13.md",
+      "url": "https://sma.nasa.gov/sma-disciplines/accllp/apollo-13"
+    },
+    {
+      "slug": "nasa-fire-detector-spinoff",
+      "status": "ready",
+      "path": "nasa_reference_data/nasa-fire-detector-spinoff.md",
+      "url": "https://spinoff.nasa.gov/node/9407"
+    },
+    {
+      "slug": "nasa-firefighters-air-tanks-spinoff",
+      "status": "ready",
+      "path": "nasa_reference_data/nasa-firefighters-air-tanks-spinoff.md",
+      "url": "https://spinoff.nasa.gov/node/9582"
+    },
+    {
+      "slug": "nasa-fire-attire-spinoff",
+      "status": "ready",
+      "path": "nasa_reference_data/nasa-fire-attire-spinoff.md",
+      "url": "https://spinoff.nasa.gov/node/9918"
+    }
+  ]
+}

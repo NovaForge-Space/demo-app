@@ -60,6 +60,18 @@ Each `npm run eval` run also appends aggregate results to
 [`PROMPTFOO_TEST_RESULTS.md`](./PROMPTFOO_TEST_RESULTS.md). Full model responses
 are kept in Promptfoo's local output, not copied into the report.
 
+### NASA reference corpus
+
+The curated official NASA reference pages are stored in
+[`BE/nasa_reference_data/`](./BE/nasa_reference_data/). Refresh them with
+`python BE/scripts/fetch_nasa_reference_data.py`, then submit them as global
+knowledge with `npm run nasa:upload` using the local `.env.promptfoo`
+credentials. Reviewed PSI experimental tables are stored under
+[`BE/nasa_datasets/`](./BE/nasa_datasets/) and are uploaded as global tabular
+sources for dashboard queries and cited chat answers. Refresh or re-upload
+them with `npm run nasa:datasets:upload` using the local `.env.promptfoo`
+credentials.
+
 Promptfoo imports the 100 cases from `BE/evals/golden_dataset.jsonl` on every
 run. The runner generates a temporary `.promptfoo/golden-tests.json` file,
 mapping each golden question to a test and preserving its category, route,

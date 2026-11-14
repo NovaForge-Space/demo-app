@@ -6,6 +6,17 @@ const reportPath = resolve(process.cwd(), "PROMPTFOO_TEST_RESULTS.md");
 
 const formatScore = (score) =>
   typeof score === "number" ? `${(score * 100).toFixed(1)}%` : "n/a";
+const formatSriLankaTime = (date = new Date()) =>
+  new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Colombo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }).format(date).replace(",", "");
 
 try {
   const evaluation = JSON.parse(await readFile(outputPath, "utf8"));
@@ -31,7 +42,7 @@ try {
     ?? evaluation.results?.stats?.tokensUsed?.total
     ?? (resultTokens || "n/a");
   const lines = [
-    `\n## Promptfoo run — ${new Date().toISOString()}`,
+    `\n## Promptfoo run — ${formatSriLankaTime()}`,
     "",
     `- **Evaluation ID:** \`${evaluation.evalId ?? "unknown"}\``,
     `- **Cases:** ${total}`,
@@ -67,7 +78,7 @@ try {
   const summary = [
     "# Promptfoo Evaluation Summary",
     "",
-    `**Latest run:** ${new Date().toISOString()}`,
+    `**Latest run:** ${formatSriLankaTime()}`,
     "",
     "| Metric | Result |",
     "|---|---:|",
@@ -77,6 +88,8 @@ try {
     `| Failed cases | ${failed} |`,
     `| Evaluation errors | ${errors} |`,
     `| Categories covered | ${categories.length ? categories.join(", ") : "n/a"} |`,
+    "",
+    "> All report timestamps use Sri Lanka time (Asia/Colombo, UTC+05:30).",
     "",
     "> Overall agent score is the mean Promptfoo judge score for the latest run. It is an evaluation signal, not a scientific accuracy percentage.",
     "",

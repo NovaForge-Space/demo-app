@@ -134,6 +134,13 @@ def test_csv_encodings_and_delimiters(label, payload):
     assert len(df) >= 2 and "Zürich" in set(df["city"]), label
 
 
+def test_csv_content_with_xls_extension_is_supported():
+    payload = b"sample,oxygen_pct,flame_speed\nA,21,2.5\nB,18,1.8\n"
+    ((_, df),) = parsers.read_tables("psi-export.xls", payload)
+    assert list(df.columns) == ["sample", "oxygen_pct", "flame_speed"]
+    assert len(df) == 2
+
+
 def test_zip_codes_keep_leading_zeros_and_codes_are_not_measures():
     from app.services.schema_infer import infer_table
 

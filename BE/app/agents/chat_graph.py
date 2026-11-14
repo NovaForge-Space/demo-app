@@ -428,7 +428,11 @@ async def execute_queries(state: ChatState) -> ChatState:
     analysis: list[dict[str, Any]] = []
     for aq in plan.analysis_queries[:4]:
         try:
-            analysis.append({"purpose": aq.purpose, "result": await _timed_query(aq.purpose, aq.query, state, by_id)})
+            analysis.append({
+                "purpose": aq.purpose,
+                "source_id": aq.query.source_id,
+                "result": await _timed_query(aq.purpose, aq.query, state, by_id),
+            })
         except Exception as e:
             errors.append(f'analysis query "{aq.purpose}": {e}')
 
@@ -539,6 +543,49 @@ async def synthesize(state: ChatState) -> ChatState:
         below = max((w.layout.y + w.layout.h for w in req.dashboard.widgets), default=0)
     pack_layout(ok_widgets, below)
     title = (state.get("plan").dashboard_title if state.get("plan") else None) or None
+    by_id = {source.id: source for source in state.get("sources", [])}
+    table_citations: list[Citation] = []
+    table_source_ids = {
+        w.source_id for w in ok_widgets if w.source_id
+    }
+    table_source_ids.update(a["source_id"] for a in state.get("analysis", []) if a.get("source_id"))
+    if state.get("plan"):
+        table_source_ids.update(
+            q.query.source_id for q in state["plan"].analysis_queries if q.query.source_id
+        )
+    for source_id in table_source_ids:
+        source = by_id.get(source_id)
+        if source is None:
+            continue
+        analysis_rows = sum(
+            a["result"].total_rows
+            for a in state.get("analysis", [])
+            if a.get("source_id") == source_id
+        )
+        analysis_excerpt = next(
+            (
+                str(a["result"].rows[:4])
+                for a in state.get("analysis", [])
+                if a.get("source_id") == source_id
+            ),
+            "",
+        )
+        widget_rows = sum(
+            w.data.total_rows
+            for w in ok_widgets
+            if w.source_id == source_id and w.data
+        )
+        table_citations.append(
+            Citation(
+                source_id=source.id,
+                filename=source.filename,
+                snippet=(
+                    f"Structured table queried: {source.name or source.filename}. "
+                    f"Results contain {analysis_rows + widget_rows} rows. "
+                    f"Returned values: {analysis_excerpt}"[:400]
+                ),
+            )
+        )
     return {
         "response": ChatResponse(
             conversation_id=req.conversation_id or "",
@@ -549,7 +596,7 @@ async def synthesize(state: ChatState) -> ChatState:
             dashboard_title=title,
             widgets=ok_widgets,
             remove_widget_ids=r.remove_widget_ids,
-            citations=[
+            citations=table_citations + [
                 Citation(
                     source_id=c["source_id"], filename=c.get("filename", ""), page=c.get("page"),
                     chunk_index=c.get("chunk_index", 0), snippet=c["text"][:400], score=c.get("score"),

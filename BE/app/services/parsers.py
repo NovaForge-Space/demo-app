@@ -100,8 +100,13 @@ def read_tables(filename: str, data: bytes) -> list[tuple[str, pd.DataFrame]]:
         text = _decode(data)
         frames = [(stem, _read_csv(text, _delimiter(text, ext)))]
     elif ext in (".xlsx", ".xlsm", ".xls"):
-        sheets = pd.read_excel(io.BytesIO(data), sheet_name=None, dtype=object)
-        frames = [(stem if len(sheets) == 1 else f"{stem} - {n}", df) for n, df in sheets.items()]
+        try:
+            sheets = pd.read_excel(io.BytesIO(data), sheet_name=None, dtype=object)
+            frames = [(stem if len(sheets) == 1 else f"{stem} - {n}", df) for n, df in sheets.items()]
+        except (ValueError, ImportError, OSError):
+            # Some PSI exports are CSV text delivered with an .xls filename.
+            text = _decode(data)
+            frames = [(stem, _read_csv(text, _delimiter(text, ".csv")))]
     elif ext in (".json", ".jsonl"):
         text = _decode(data)
         if ext == ".jsonl":

@@ -3,7 +3,9 @@
   "private": true,
   "scripts": {
     "eval": "bash scripts/run-promptfoo-eval.sh",
-    "eval:view": "promptfoo view"
+    "eval:view": "promptfoo view",
+    "nasa:upload": "node scripts/upload-nasa-reference.mjs",
+    "nasa:datasets:upload": "node scripts/upload-nasa-datasets.mjs"
   },
   "devDependencies": {
     "promptfoo": "^0.120.0"
