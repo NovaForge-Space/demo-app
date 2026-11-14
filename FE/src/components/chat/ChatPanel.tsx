@@ -41,16 +41,10 @@ function Bubble({ m, isLast }: { m: Message; isLast: boolean }) {
   return (
     <div className="rise space-y-2">
       <div className={`rounded-2xl rounded-tl-md border px-3.5 py-3 ${m.error ? "border-crit/40 bg-crit/10" : m.blocked ? "border-warn/40 bg-warn/8" : "border-line bg-panel2"}`}>
-        {m.blocked ? (
+        {m.blocked && (
           <span className="mb-1.5 inline-flex items-center gap-1 rounded bg-warn/15 px-1.5 py-0.5 font-mono text-[10px] tracking-wider text-warn uppercase">
             <Icon name="shield-exclamation" size={10} /> flagged · refused
           </span>
-        ) : (
-          m.intent && !m.error && (
-            <span className="mb-1.5 inline-block rounded bg-ink/5 px-1.5 py-0.5 font-mono text-[10px] tracking-wider text-mute uppercase">
-              {m.intent.replace("_", " ")}
-            </span>
-          )
         )}
         <div className="md text-[13.5px] leading-relaxed text-ink2">
           {m.error ? <p className="text-crit">{m.content}</p> : <Markdown remarkPlugins={[remarkGfm]}>{m.content}</Markdown>}
@@ -79,7 +73,7 @@ function Bubble({ m, isLast }: { m: Message; isLast: boolean }) {
 
         {!!m.trace?.length && (
           <div className="mt-2">
-            <button onClick={() => setShowTrace((v) => !v)} className="flex items-center gap-1 font-mono text-[11px] text-mute hover:text-ink2" aria-expanded={showTrace}>
+            <button onClick={() => setShowTrace((v) => !v)} className="flex items-center gap-1.5 font-mono text-[11px] leading-none text-mute hover:text-ink2" aria-expanded={showTrace}>
               <Icon name="angle-small-right" size={11} className={`transition ${showTrace ? "rotate-90" : ""}`} />
               how I got this · {m.trace.length} steps
             </button>
@@ -232,7 +226,7 @@ export function ChatPanel({ onClose, expanded = false, onToggleExpand }: PanelPr
             <Icon name="menu-burger" size={15} />
           </button>
           <SmokeOrb size={24} />
-          <h2 className="font-display text-base font-semibold">Copilot</h2>
+          <h2 className="font-display text-base font-semibold">Nova</h2>
           <button onClick={newConversation} disabled={busy} className="ml-auto inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-ink2 hover:bg-ink/10 disabled:opacity-40" title="New conversation">
             <Icon name="plus" size={13} /> New
           </button>

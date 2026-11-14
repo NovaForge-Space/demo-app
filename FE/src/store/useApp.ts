@@ -107,11 +107,25 @@ const AUTO_NAME = /^(sheet|untitled|dashboard)\s*\d*$/i;
 
 const errText = (e: unknown) => errorText(e);
 
+function normalizeWidgets(widgets: Widget[]): Widget[] {
+  const insights = widgets.filter((w) => w.type === "insight");
+  const kept = widgets.filter((w) => w.type !== "insight");
+  if (!insights.length) return kept;
+  const insight = { ...insights[insights.length - 1], layout: { ...insights[insights.length - 1].layout } };
+  insight.layout.x = 0;
+  insight.layout.y = Math.max(...kept.map((w) => w.layout.y + w.layout.h), 0);
+  insight.layout.w = 12;
+  const lines = (insight.content ?? "").split(/\r?\n/).filter(Boolean).reduce((count, line) => count + Math.max(1, Math.ceil(line.length / 150)), 0);
+  insight.layout.h = Math.max(2, Math.min(4, Math.ceil(lines / 2) + 1));
+  return [...kept, insight];
+}
+
 function applyResponse(dash: Dashboard, res: ChatResponse): Dashboard {
   let widgets = [...dash.widgets];
   if (res.dashboard_action === "replace") {
     widgets = res.widgets;
   } else if (res.dashboard_action === "append") {
+    if (res.widgets.some((w) => w.type === "insight")) widgets = widgets.filter((w) => w.type !== "insight");
     for (const w of res.widgets) {
       const idx = w.replaces ? widgets.findIndex((x) => x.id === w.replaces) : -1;
       if (idx >= 0) widgets[idx] = w;
@@ -119,7 +133,7 @@ function applyResponse(dash: Dashboard, res: ChatResponse): Dashboard {
     }
   }
   if (res.remove_widget_ids.length) widgets = widgets.filter((w) => !res.remove_widget_ids.includes(w.id));
-  return { ...dash, widgets };
+  return { ...dash, widgets: normalizeWidgets(widgets) };
 }
 
 const sameLayout = (a: Layout, b: Layout) => a.x === b.x && a.y === b.y && a.w === b.w && a.h === b.h;
@@ -246,9 +260,13 @@ export const useApp = create<AppState>()(
         try {
           const sheets = await api.sheets();
           set({ sheets });
+          const currentTab = get().tab;
           const { activeSheetId } = get();
           const target = sheets.find((s) => s.id === activeSheetId) ?? sheets[0];
-          if (target) await get().openSheet(target.id);
+          if (target) {
+            await get().openSheet(target.id);
+            if (currentTab !== "dashboard") set({ tab: currentTab });
+          }
           else set({ activeSheetId: null, dashboard: EMPTY });
         } catch {}
       },
@@ -257,9 +275,10 @@ export const useApp = create<AppState>()(
         if (get().dirty) await get().saveNow();
         try {
           const sheet = await api.sheet(id);
+          const widgets = normalizeWidgets(sheet.widgets);
           set({
             activeSheetId: sheet.id,
-            dashboard: { title: sheet.name, widgets: sheet.widgets },
+            dashboard: { title: sheet.name, widgets },
             filters: sheet.filters ?? [],
             dirty: false,
             saveState: "idle",
@@ -274,11 +293,12 @@ export const useApp = create<AppState>()(
       createSheet: async (name, widgets = []) => {
         if (get().dirty) await get().saveNow();
         const label = name?.trim() || `Sheet ${get().sheets.length + 1}`;
-        const sheet = await api.createSheet(label, widgets, []);
+        const normalized = normalizeWidgets(widgets);
+        const sheet = await api.createSheet(label, normalized, []);
         set((s) => ({
-          sheets: [...s.sheets, { id: sheet.id, name: sheet.name, widget_count: widgets.length, updated_at: sheet.updated_at }],
+          sheets: [...s.sheets, { id: sheet.id, name: sheet.name, widget_count: normalized.length, updated_at: sheet.updated_at }],
           activeSheetId: sheet.id,
-          dashboard: { title: sheet.name, widgets },
+          dashboard: { title: sheet.name, widgets: normalized },
           filters: [],
           dirty: false,
           saveState: "saved",
@@ -562,6 +582,7 @@ export const useApp = create<AppState>()(
       // only UI preferences and ids: chats and sheets are always loaded from the server for the signed-in user
       partialize: (s) => ({
         ownerId: s.ownerId,
+        tab: s.tab,
         sidebarCollapsed: s.sidebarCollapsed,
         chatOpen: s.chatOpen,
         chatExpanded: s.chatExpanded,

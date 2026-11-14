@@ -6,7 +6,6 @@ import { Icon, type IconName } from "@/components/ui/Icon";
 import { useAdmin } from "@/store/useAdmin";
 import { useApp, type Tab } from "@/store/useApp";
 import { useAuth } from "@/store/useAuth";
-import { useToasts } from "@/store/useToasts";
 
 function initials(name: string) {
   return name.split(/\s+/).filter(Boolean).slice(0, 2).map((p) => p[0]?.toUpperCase()).join("") || "?";
@@ -15,20 +14,12 @@ function initials(name: string) {
 function UserCard({ collapsed }: { collapsed: boolean }) {
   const user = useAuth((s) => s.user);
   const logout = useAuth((s) => s.logout);
-  const push = useToasts((s) => s.push);
   if (!user) return null;
-
-  const copyId = async () => {
-    try {
-      await navigator.clipboard.writeText(user.id);
-      push("User ID copied");
-    } catch {}
-  };
 
   if (collapsed)
     return (
       <div className="flex flex-col items-center gap-2">
-        <span className="grid h-9 w-9 place-items-center rounded-full bg-side-active font-mono text-xs font-semibold text-side-active-ink" title={`${user.name} · ${user.id}`}>
+        <span className="grid h-9 w-9 place-items-center rounded-full bg-side-active font-mono text-xs font-semibold text-side-active-ink" title={user.name}>
           {initials(user.name)}
         </span>
         <button onClick={() => logout()} className="grid h-9 w-9 place-items-center rounded-xl text-side-ink transition hover:bg-white/15" aria-label="Sign out" title="Sign out">
@@ -44,10 +35,6 @@ function UserCard({ collapsed }: { collapsed: boolean }) {
       </span>
       <div className="min-w-0 flex-1 leading-tight">
         <div className="truncate text-[13px] font-medium" title={user.email}>{user.name}</div>
-        <button onClick={copyId} title="Copy your user ID" className="group flex max-w-full items-center gap-1 font-mono text-[10.5px] text-side-ink2 hover:text-side-ink">
-          <span className="truncate">{user.id}</span>
-          <Icon name="copy" size={10} className="shrink-0 opacity-0 transition group-hover:opacity-100" />
-        </button>
       </div>
       <button onClick={() => logout()} className="rounded-lg p-2 text-side-ink2 transition hover:bg-white/15 hover:text-side-ink" aria-label="Sign out" title="Sign out">
         <Icon name="sign-out-alt" size={16} />

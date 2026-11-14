@@ -6,6 +6,7 @@ import { api, errorText } from "@/lib/api";
 import { formatValue } from "@/lib/format";
 import type { ColumnRole, Row, SourceDoc } from "@/lib/types";
 import { useApp } from "@/store/useApp";
+import { useAuth } from "@/store/useAuth";
 import { useToasts } from "@/store/useToasts";
 import { Dropzone } from "./Dropzone";
 
@@ -179,6 +180,7 @@ function Relationships({ scope }: { scope: "private" | "global" }) {
 export function DataManager({ scope = "private", embedded = false }: { scope?: "private" | "global"; embedded?: boolean }) {
   const all = useApp((s) => s.sources);
   const sources = all.filter((s) => s.visibility === scope);
+  const isAdmin = useAuth((s) => s.user?.role === "admin");
   const global = scope === "global";
   return (
     <div className={embedded ? "space-y-4" : "mx-auto max-w-4xl space-y-4 py-6"}>
@@ -195,7 +197,7 @@ export function DataManager({ scope = "private", embedded = false }: { scope?: "
         </p>
       </div>
       <Dropzone visibility={scope} />
-      <Relationships scope={scope} />
+      {isAdmin && <Relationships scope={scope} />}
       <div className="space-y-3">
         {sources.map((s) => <SourceCard key={s.id} s={s} />)}
         {!sources.length && <p className="py-6 text-center text-sm text-mute">{global ? "No global knowledge yet." : "No data yet."}</p>}

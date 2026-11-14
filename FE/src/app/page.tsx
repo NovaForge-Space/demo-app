@@ -32,18 +32,23 @@ function Workspace({ userId, isAdmin }: { userId: string; isAdmin: boolean }) {
   const adminOpen = useAdmin((s) => s.open);
 
   useEffect(() => {
-    Promise.resolve(useApp.persist.rehydrate()).then(() => {
+    let active = true;
+    Promise.resolve(useApp.persist.rehydrate()).then(async () => {
       const s = useApp.getState();
       s.adoptOwner(userId); // clears anything a previous person left in this browser
       s.initTheme();
-      s.loadSheets();
-      s.loadSessions();
+      await Promise.all([s.loadSheets(), s.loadSessions()]);
       const current = useApp.getState().conversationId;
-      if (current) s.openConversation(current);
-      setHydrated(true);
-    }).catch(() => setHydrated(true));
+      if (current) await s.openConversation(current);
+      if (active) setHydrated(true);
+    }).catch(() => {
+      if (active) setHydrated(true);
+    });
     refreshHealth();
     refreshSources();
+    return () => {
+      active = false;
+    };
   }, [userId, refreshHealth, refreshSources]);
 
   useEffect(() => {

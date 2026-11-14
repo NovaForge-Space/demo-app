@@ -26,7 +26,7 @@ export function ChatWidget() {
   if (open) {
     return (
       <section
-        role="complementary" aria-label="Copilot"
+        role="complementary" aria-label="Nova"
         className={`chat-dock card-surface relative z-40 flex shrink-0 flex-col overflow-hidden rounded-[22px] transition-[width] duration-200 max-lg:fixed max-lg:inset-3 max-lg:w-auto ${
           expanded
             ? sessionsOpen ? "w-[min(900px,58vw)]" : "w-[min(680px,45vw)]"
@@ -41,12 +41,12 @@ export function ChatWidget() {
   return (
     <div className="fixed right-5 bottom-5 z-40 flex items-center gap-3">
       <span className="rise hidden rounded-full bg-panel px-3.5 py-1.5 text-xs font-medium text-ink2 shadow-[var(--card-shadow)] sm:block">
-        Ask the copilot
+        Ask the Nova
       </span>
       <button
         onClick={() => setOpen(true)}
         aria-label="Open copilot" aria-expanded={false}
-        title={busy ? "Copilot is working…" : "Open copilot"}
+        title={busy ? "Nova is working…" : "Open Nova"}
         className="group relative rounded-full transition-transform duration-300 ease-out hover:scale-110 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent active:scale-95"
       >
         <SmokeOrb busy={busy} size={64} />

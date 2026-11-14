@@ -58,7 +58,7 @@ export function KnowledgeView() {
           </span>
         ) : (
           <span>
-            Shared with everyone in this workspace and available to the copilot for all users.{" "}
+            Shared with everyone in this workspace and available to the Nova for all users.{" "}
             {isAdmin ? "Manage it from Admin → Global knowledge." : "Only administrators can change it."}
           </span>
         )}

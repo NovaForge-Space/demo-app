@@ -55,14 +55,30 @@ function EmptyState() {
 function Grid({ widgets }: { widgets: Widget[] }) {
   const { width, containerRef, mounted } = useContainerWidth();
   const setLayouts = useApp((s) => s.setLayouts);
-  const layout = useMemo<LayoutItem[]>(
-    () =>
-      widgets.map((w) => {
+  const cols = width < 560 ? 1 : width < 900 ? 6 : 12;
+  const responsive = width < 900;
+  const layout = useMemo<LayoutItem[]>(() => {
+    if (!responsive) {
+      return widgets.map((w) => {
         const [minW, minH] = minOf(w.type);
         return { i: w.id, x: w.layout.x ?? 0, y: w.layout.y ?? 0, w: w.layout.w, h: w.layout.h, minW, minH };
-      }),
-    [widgets],
-  );
+      });
+    }
+    return widgets.reduce<{ items: LayoutItem[]; x: number; y: number; rowHeight: number }>((state, w) => {
+      const [minW, minH] = minOf(w.type);
+      const h = Math.max(w.layout.h, w.type === "card" ? 2 : 4);
+      const itemWidth = cols === 1 ? 1 : w.type === "card" || w.type === "gauge" ? 3 : 6;
+      const nextX = state.x + itemWidth > cols ? 0 : state.x;
+      const nextY = state.x + itemWidth > cols ? state.y + state.rowHeight : state.y;
+      const nextRowHeight = state.x + itemWidth > cols ? 0 : state.rowHeight;
+      return {
+        items: [...state.items, { i: w.id, x: nextX, y: nextY, w: itemWidth, h, minW: cols === 1 ? 1 : Math.min(minW, 3), minH }],
+        x: nextX + itemWidth,
+        y: nextY,
+        rowHeight: Math.max(nextRowHeight, h),
+      };
+    }, { items: [], x: 0, y: 0, rowHeight: 0 }).items;
+  }, [cols, responsive, widgets]);
 
   return (
     <div ref={containerRef}>
@@ -70,13 +86,13 @@ function Grid({ widgets }: { widgets: Widget[] }) {
         <ReactGridLayout
           width={width}
           layout={layout}
-          gridConfig={{ cols: 12, rowHeight: ROW_HEIGHT, margin: [12, 12], containerPadding: [0, 0] }}
+          gridConfig={{ cols, rowHeight: ROW_HEIGHT, margin: [16, 16], containerPadding: [0, 0] }}
           dragConfig={{ enabled: true, handle: ".tile-drag", cancel: ".no-drag" }}
           resizeConfig={{ enabled: true, handles: ["se"] }}
           compactor={verticalCompactor}
           onLayoutChange={(next) => {
             if (next.length !== widgets.length) return;
-            setLayouts(next.map((l) => ({ id: l.i, layout: { x: l.x, y: l.y, w: l.w, h: l.h } })));
+            if (!responsive) setLayouts(next.map((l) => ({ id: l.i, layout: { x: l.x, y: l.y, w: l.w, h: l.h } })));
           }}
         >
           {widgets.map((w) => (

@@ -73,13 +73,13 @@ export function CardWidget({ widget, data }: { widget: Widget; data: QueryResult
   const arrow = up ? "arrow-trend-up" : down ? "arrow-trend-down" : "minus";
 
   return (
-    <div ref={ref} className="relative h-full min-h-0">
+    <div ref={ref} className="relative flex h-full min-h-0 flex-col justify-center">
       {showSpark && (
         <div className="absolute inset-x-0 bottom-0" style={{ height: "44%" }}>
           <EChart option={option} label={`${widget.title} trend`} />
         </div>
       )}
-      <div className="pointer-events-none relative">
+      <div className="pointer-events-none relative flex flex-col items-start pl-10 text-left">
         <div
           className="font-display tabular leading-none font-semibold tracking-tight whitespace-nowrap text-ink"
           style={{ fontSize }}

@@ -101,7 +101,7 @@ function cartesian({ widget: w, data, selected, colors: c }: ChartCtx): EChartsO
 
   const multi = defs.length > 1;
   const single = defs.length === 1;
-  const showLabels = single && !isLine && cats.length <= 12;
+  const showLabels = single && !isLine && horizontal && cats.length <= 12;
   const radius = horizontal ? [0, 4, 4, 0] : [4, 4, 0, 0];
 
   const series = defs.map((d, i) => {
@@ -182,7 +182,7 @@ function cartesian({ widget: w, data, selected, colors: c }: ChartCtx): EChartsO
     legend: multi
       ? { top: 0, icon: "roundRect", itemWidth: 10, itemHeight: 10, textStyle: { color: c.ink.secondary, fontSize: 11 } }
       : undefined,
-    grid: { left: 8, right: showLabels && horizontal ? 48 : 16, top: multi ? 34 : 14, bottom: 6, containLabel: true },
+    grid: { left: horizontal ? 12 : 8, right: showLabels && horizontal ? 56 : 16, top: multi ? 42 : 18, bottom: horizontal ? 10 : 14, containLabel: true },
     tooltip: {
       ...tooltipBase(c),
       trigger: "axis",
@@ -340,7 +340,7 @@ function scatter({ widget: w, data, colors: c }: ChartCtx): EChartsOption {
   return {
     backgroundColor: "transparent",
     legend: multi ? { top: 0, icon: "circle", itemWidth: 9, itemHeight: 9, textStyle: { color: c.ink.secondary, fontSize: 11 } } : undefined,
-    grid: { left: 8, right: 16, top: multi ? 52 : 34, bottom: 30, containLabel: true },
+    grid: { left: 12, right: 20, top: multi ? 60 : 40, bottom: 38, containLabel: true },
     tooltip: {
       ...tooltipBase(c),
       trigger: "item",
@@ -479,4 +479,3 @@ export function clickableFields(w: Widget): string[] {
       return [];
   }
 }
-

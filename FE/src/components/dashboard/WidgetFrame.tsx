@@ -130,7 +130,7 @@ export function WidgetFrame({ widget, expanded = false }: { widget: Widget; expa
           </button>
         </div>
       </header>
-      <div className="no-drag min-h-0 flex-1">
+      <div className={`no-drag min-h-0 ${widget.type === "insight" ? "flex-none" : "flex-1"}`}>
         <Body widget={widget} asTable={asTable} />
       </div>
     </section>

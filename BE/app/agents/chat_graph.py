@@ -530,7 +530,7 @@ async def synthesize(state: ChatState) -> ChatState:
     ]
     out = await structured(Synthesis, msg)
 
-    ok_widgets = [w for w in widgets if w.type != "slicer" or w.slicer_column]
+    ok_widgets = [w for w in widgets if w.type != "insight" and (w.type != "slicer" or w.slicer_column)]
     if ok_widgets and r.needs_kpis and out.key_insights:
         ok_widgets.append(
             Widget(

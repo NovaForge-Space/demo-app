@@ -10,7 +10,7 @@ DEFAULT_LAYOUT: dict[str, tuple[int, int]] = {
     "table": (12, 5), "matrix": (12, 5), "map": (6, 5),
 }
 SPAN_COLUMNS = {"third": 4, "half": 6, "two_thirds": 8, "full": 12}
-_RANK = {"card": 0, "gauge": 0, "slicer": 1, "table": 3, "matrix": 3, "insight": 4}
+_RANK = {"card": 0, "gauge": 0, "slicer": 1, "insight": 4}
 
 _NUMERIC = ("integer", "float")
 _CATEGORY = ("string", "date", "datetime", "boolean")
@@ -26,14 +26,19 @@ def default_layout(wtype: str, span: str | None = None) -> Layout:
 def pack_layout(widgets: list, start_y: int = 0) -> None:
     x = row_h = 0
     y = start_y
+    previous_rank = None
     for w in sorted(widgets, key=lambda w: _RANK.get(w.type, 2)):
         if w.replaces:
             continue
+        rank = _RANK.get(w.type, 2)
+        if previous_rank is not None and rank != previous_rank and x:
+            x, y, row_h = 0, y + row_h, 0
         if x + w.layout.w > 12:
             x, y, row_h = 0, y + row_h, 0
         w.layout.x, w.layout.y = x, y
         x += w.layout.w
         row_h = max(row_h, w.layout.h)
+        previous_rank = rank
 
 
 def as_time_series(spec: WidgetSpec, source: SourceDoc) -> None:
