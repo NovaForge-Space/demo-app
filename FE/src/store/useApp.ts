@@ -334,7 +334,9 @@ export const useApp = create<AppState>()(
         }
       },
 
-      newConversation: () => set({ messages: [], conversationId: newConvId(), trace: [] }),
+      newConversation: () => set({
+        messages: [], conversationId: newConvId(), trace: [], chatOpen: true, sessionsOpen: false, unread: false,
+      }),
       setKbScope: (kbScope) => set({ kbScope }),
 
       loadSessions: async () => {
@@ -430,7 +432,7 @@ export const useApp = create<AppState>()(
           const cur = get();
           const changes = res.widgets.length > 0 || res.remove_widget_ids.length > 0;
           if (changes) {
-            const name = res.dashboard_title || undefined;
+            const name = res.title && res.title !== "New chat" ? res.title : res.dashboard_title || undefined;
             if (res.dashboard_action === "replace" && res.widgets.length && cur.dashboard.widgets.length) {
               await get().createSheet(name, res.widgets);
             } else {

@@ -8,11 +8,6 @@ import { useApp, type Tab } from "@/store/useApp";
 import { useAuth } from "@/store/useAuth";
 import { useToasts } from "@/store/useToasts";
 
-function relative(iso: string) {
-  const d = new Date(iso);
-  return Number.isNaN(d.getTime()) ? "" : d.toLocaleDateString([], { month: "short", day: "numeric" });
-}
-
 function initials(name: string) {
   return name.split(/\s+/).filter(Boolean).slice(0, 2).map((p) => p[0]?.toUpperCase()).join("") || "?";
 }
@@ -116,7 +111,12 @@ export function Sidebar() {
         <ul className="space-y-0.5">
           {views.map(({ id, label: text, icon, badge }) => (
             <li key={id}>
-              <button onClick={() => setTab(id)} className={item(tab === id)} aria-current={tab === id ? "page" : undefined} title={collapsed ? text : undefined}>
+              <button
+                onClick={() => setTab(id)}
+                className={item(id === "dashboard" ? tab === id && !!activeId : tab === id)}
+                aria-current={id === "dashboard" ? (tab === id && activeId ? "page" : undefined) : tab === id ? "page" : undefined}
+                title={collapsed ? text : undefined}
+              >
                 <Icon name={icon} size={17} />
                 {!collapsed && <span className="flex-1">{text}</span>}
                 {!collapsed && badge !== undefined && (

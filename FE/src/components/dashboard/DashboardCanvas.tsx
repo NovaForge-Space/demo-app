@@ -74,9 +74,10 @@ function Grid({ widgets }: { widgets: Widget[] }) {
           dragConfig={{ enabled: true, handle: ".tile-drag", cancel: ".no-drag" }}
           resizeConfig={{ enabled: true, handles: ["se"] }}
           compactor={verticalCompactor}
-          onLayoutChange={(next) =>
-            setLayouts(next.map((l) => ({ id: l.i, layout: { x: l.x, y: l.y, w: l.w, h: l.h } })))
-          }
+          onLayoutChange={(next) => {
+            if (next.length !== widgets.length) return;
+            setLayouts(next.map((l) => ({ id: l.i, layout: { x: l.x, y: l.y, w: l.w, h: l.h } })));
+          }}
         >
           {widgets.map((w) => (
             <div key={w.id}>

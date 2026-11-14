@@ -178,6 +178,7 @@ export function ChatPanel({ onClose, expanded = false, onToggleExpand }: PanelPr
   const newConversation = useApp((s) => s.newConversation);
   const exportConversation = useApp((s) => s.exportConversation);
   const firstName = useAuth((s) => s.user?.name.split(" ")[0]);
+  const isAdmin = useAuth((s) => s.user?.role === "admin");
   const push = useToasts((s) => s.push);
   const [text, setText] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -250,7 +251,7 @@ export function ChatPanel({ onClose, expanded = false, onToggleExpand }: PanelPr
           )}
         </header>
 
-        <KnowledgeSwitch />
+        {isAdmin && <KnowledgeSwitch />}
 
         {health && !health.assistant_ready && (
           <p className="border-b border-line bg-panel2 px-4 py-2 text-xs text-ink2" role="status">

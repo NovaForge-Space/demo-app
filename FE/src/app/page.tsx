@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ChangePasswordScreen } from "@/components/auth/ChangePasswordScreen";
 import { LoginScreen } from "@/components/auth/LoginScreen";
 import { Logo } from "@/components/brand/Logo";
@@ -20,6 +20,7 @@ import { useAuth } from "@/store/useAuth";
 const AdminModal = dynamic(() => import("@/components/admin/AdminModal").then((m) => m.AdminModal), { ssr: false });
 
 function Workspace({ userId, isAdmin }: { userId: string; isAdmin: boolean }) {
+  const [hydrated, setHydrated] = useState(false);
   const tab = useApp((s) => s.tab);
   const processing = useApp((s) => s.sources.some((x) => x.status === "processing" || x.status === "deleting"));
   const dirty = useApp((s) => s.dirty);
@@ -39,7 +40,8 @@ function Workspace({ userId, isAdmin }: { userId: string; isAdmin: boolean }) {
       s.loadSessions();
       const current = useApp.getState().conversationId;
       if (current) s.openConversation(current);
-    });
+      setHydrated(true);
+    }).catch(() => setHydrated(true));
     refreshHealth();
     refreshSources();
   }, [userId, refreshHealth, refreshSources]);
@@ -79,6 +81,10 @@ function Workspace({ userId, isAdmin }: { userId: string; isAdmin: boolean }) {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
+
+  if (!hydrated) {
+    return <div className="fixed inset-0 grid place-items-center bg-white" aria-busy="true" aria-label="Loading workspace"><Logo size={34} className="animate-pulse" /></div>;
+  }
 
   return (
     <div className="stage flex h-screen gap-3 p-3">
