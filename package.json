@@ -1,0 +1,11 @@
+{
+  "name": "novaforge-evals",
+  "private": true,
+  "scripts": {
+    "eval": "bash scripts/run-promptfoo-eval.sh",
+    "eval:view": "promptfoo view"
+  },
+  "devDependencies": {
+    "promptfoo": "^0.120.0"
+  }
+}

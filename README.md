@@ -34,6 +34,46 @@ the encrypted transport and PDF export need `cryptography`, `PyJWT` and `reportl
 Try it with the synthetic demo data in `BE/sample_data/` (clearly labelled synthetic, not real NASA results).
 `python BE/scripts/make_sample_data.py` regenerates it.
 
+### LLM-as-judge evaluation
+
+Promptfoo evaluates the live chat agent through the encrypted API transport. Install
+the root dependencies, then set `PROMPTFOO_API_URL`, `PROMPTFOO_EMAIL`,
+`PROMPTFOO_PASSWORD`, and `PROMPTFOO_SIGNING_PUBKEY` to a test backend and user
+account. The judge defaults to the Azure OpenAI deployment named `gpt-6-luna`;
+export `AZURE_API_HOST`, `AZURE_API_KEY`, and `AZURE_API_VERSION` for Promptfoo
+using the same Azure resource, key, and API version as the backend
+(`LLM_BASE_URL`, `LLM_API_KEY`, and `LLM_API_VERSION`). The provider wrapper
+uses the `LLM_*` values only for the NovaForge backend; Promptfoo's judge uses
+the standard `AZURE_*` names.
+
+```bash
+npm install
+npm run eval -- --env-file .env.promptfoo
+npm run eval:view
+```
+
+The project pins Promptfoo to the Node 20-compatible `0.120.x` release line.
+Promptfoo Cloud login is not required for local runs; `.env.promptfoo` is a
+local ignored file populated from the existing backend/frontend configuration.
+Use a dedicated test user instead of an administrator account when possible.
+Each `npm run eval` run also appends aggregate results to
+[`PROMPTFOO_TEST_RESULTS.md`](./PROMPTFOO_TEST_RESULTS.md). Full model responses
+are kept in Promptfoo's local output, not copied into the report.
+
+Promptfoo imports the 100 cases from `BE/evals/golden_dataset.jsonl` on every
+run. The runner generates a temporary `.promptfoo/golden-tests.json` file,
+mapping each golden question to a test and preserving its category, route,
+source, filter, citation, numeric, and safety metadata. Do not use production
+credentials or commit evaluation results containing sensitive responses.
+
+Run a small sample first, then target a category or the full dataset:
+
+```bash
+npm run eval -- --env-file .env.promptfoo --filter-first-n 5
+npm run eval -- --env-file .env.promptfoo --filter-pattern numeric_analysis
+npm run eval -- --env-file .env.promptfoo
+```
+
 ## How it works
 
 ### Ingestion agent (LangGraph) - `BE/app/agents/ingest_graph.py`
