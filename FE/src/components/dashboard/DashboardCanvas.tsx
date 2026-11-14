@@ -23,9 +23,9 @@ function EmptyState() {
   const starters = useMemo(() => starterQuestions(sources), [sources]);
   return (
     <div className="mx-auto flex max-w-2xl flex-col items-center pt-[7vh] text-center">
-      <div className="rise mb-5 rounded-2xl border border-accent/30 bg-accent/10 px-3 py-1 font-mono text-[11px] tracking-[0.2em] text-accent uppercase">
+      {/* <div className="rise mb-5 rounded-2xl border border-accent/30 bg-accent/10 px-3 py-1 font-mono text-[11px] tracking-[0.2em] text-accent uppercase">
         Fire safety · microgravity
-      </div>
+      </div> */}
       <h2 className="rise font-display text-4xl leading-[1.05] font-semibold tracking-tight [animation-delay:60ms] md:text-5xl">
         {ready ? "Ask, and the dashboard builds itself." : "Bring the data. We’ll bring the dashboard."}
       </h2>

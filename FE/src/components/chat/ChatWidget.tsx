@@ -11,7 +11,6 @@ export function ChatWidget() {
   const sessionsOpen = useApp((s) => s.sessionsOpen);
   const busy = useApp((s) => s.busy);
   const unread = useApp((s) => s.unread);
-  const hasHistory = useApp((s) => s.messages.length > 0);
   const setOpen = useApp((s) => s.setChatOpen);
   const toggleExpanded = useApp((s) => s.toggleChatExpanded);
 
@@ -41,11 +40,9 @@ export function ChatWidget() {
 
   return (
     <div className="fixed right-5 bottom-5 z-40 flex items-center gap-3">
-      {!hasHistory && (
-        <span className="rise hidden rounded-full bg-panel px-3.5 py-1.5 text-xs font-medium text-ink2 shadow-[var(--card-shadow)] sm:block">
-          Ask the copilot
-        </span>
-      )}
+      <span className="rise hidden rounded-full bg-panel px-3.5 py-1.5 text-xs font-medium text-ink2 shadow-[var(--card-shadow)] sm:block">
+        Ask the copilot
+      </span>
       <button
         onClick={() => setOpen(true)}
         aria-label="Open copilot" aria-expanded={false}

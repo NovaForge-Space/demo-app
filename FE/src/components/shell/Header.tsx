@@ -60,7 +60,7 @@ function Filters() {
   if (!filters.length)
     return (
       <p className="flex items-center gap-1.5 text-xs text-mute">
-        <Icon name="cursor-finger" size={13} /> No filters applied. Click a bar, slice, cell or map region to cross-filter this sheet.
+        {/* <Icon name="cursor-finger" size={13} /> No filters applied. Click a bar, slice, cell or map region to cross-filter this sheet. */}
       </p>
     );
   return (
