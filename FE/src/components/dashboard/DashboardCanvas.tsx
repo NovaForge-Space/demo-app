@@ -55,25 +55,37 @@ function EmptyState() {
 function Grid({ widgets }: { widgets: Widget[] }) {
   const { width, containerRef, mounted } = useContainerWidth();
   const setLayouts = useApp((s) => s.setLayouts);
-  const cols = width < 560 ? 1 : width < 900 ? 6 : 12;
-  const responsive = width < 900;
+  const cols = width < 560 ? 1 : width < 760 ? 6 : 12;
+  const responsive = width < 760;
   const layout = useMemo<LayoutItem[]>(() => {
-    if (!responsive) {
-      return widgets.map((w) => {
-        const [minW, minH] = minOf(w.type);
-        return { i: w.id, x: w.layout.x ?? 0, y: w.layout.y ?? 0, w: w.layout.w, h: w.layout.h, minW, minH };
-      });
-    }
-    return widgets.reduce<{ items: LayoutItem[]; x: number; y: number; rowHeight: number }>((state, w) => {
+    const rank = (type: Widget["type"]) => type === "card" || type === "gauge" ? 0 : type === "slicer" ? 1 : type === "insight" ? 3 : 2;
+    const ordered = [...widgets].sort((a, b) => rank(a.type) - rank(b.type));
+    return ordered.reduce<{ items: LayoutItem[]; x: number; y: number; rowHeight: number }>((state, w) => {
       const [minW, minH] = minOf(w.type);
-      const h = Math.max(w.layout.h, w.type === "card" ? 2 : 4);
-      const itemWidth = cols === 1 ? 1 : w.type === "card" || w.type === "gauge" ? 3 : 6;
-      const nextX = state.x + itemWidth > cols ? 0 : state.x;
-      const nextY = state.x + itemWidth > cols ? state.y + state.rowHeight : state.y;
-      const nextRowHeight = state.x + itemWidth > cols ? 0 : state.rowHeight;
+      const h = responsive ? Math.max(w.layout.h, w.type === "card" ? 2 : 4) : w.layout.h;
+      const fullWidth = w.type === "insight" || (responsive && cols === 6 && w.type !== "card" && w.type !== "gauge");
+      const itemWidth = fullWidth
+        ? cols
+        : cols === 1
+          ? 1
+          : w.type === "card" || w.type === "gauge"
+            ? 3
+            : 6;
+      const wraps = state.x + itemWidth > cols || fullWidth;
+      const nextX = wraps ? 0 : state.x;
+      const nextY = wraps ? state.y + state.rowHeight : state.y;
+      const nextRowHeight = wraps ? 0 : state.rowHeight;
       return {
-        items: [...state.items, { i: w.id, x: nextX, y: nextY, w: itemWidth, h, minW: cols === 1 ? 1 : Math.min(minW, 3), minH }],
-        x: nextX + itemWidth,
+        items: [...state.items, {
+          i: w.id,
+          x: nextX,
+          y: nextY,
+          w: itemWidth,
+          h,
+          minW: cols === 1 ? 1 : Math.min(minW, itemWidth),
+          minH,
+        }],
+        x: fullWidth ? 0 : nextX + itemWidth,
         y: nextY,
         rowHeight: Math.max(nextRowHeight, h),
       };
