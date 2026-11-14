@@ -116,7 +116,7 @@ function SheetHeader() {
               title={activeId ? "Click to rename" : undefined}
               className={`truncate font-display text-xl leading-tight font-semibold tracking-tight ${activeId ? "cursor-text hover:text-ink2" : ""}`}
             >
-              {title || (activeId ? "Sheet" : "No sheet open")}
+              {title || (activeId ? "Sheet" : "Dashboard")}
             </h1>
           )}
           <div className="font-mono text-[11px] text-mute">{count} visual{count === 1 ? "" : "s"}</div>

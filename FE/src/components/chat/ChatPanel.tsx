@@ -168,6 +168,7 @@ export function ChatPanel({ onClose, expanded = false, onToggleExpand }: PanelPr
   const sessionsOpen = useApp((s) => s.sessionsOpen);
   const toggleSessions = useApp((s) => s.toggleSessions);
   const send = useApp((s) => s.send);
+  const stopChat = useApp((s) => s.stopChat);
   const attach = useApp((s) => s.attach);
   const newConversation = useApp((s) => s.newConversation);
   const exportConversation = useApp((s) => s.exportConversation);
@@ -293,10 +294,10 @@ export function ChatPanel({ onClose, expanded = false, onToggleExpand }: PanelPr
               onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); submit(); } }}
               className="max-h-36 min-h-9 flex-1 resize-none bg-transparent px-1.5 py-2 text-sm outline-none placeholder:text-mute"
             />
-            <button onClick={submit} disabled={!text.trim() || busy || waiting} aria-label="Send"
-              title={waiting ? "Waiting for the attached file to finish processing" : "Send"}
+            <button onClick={busy ? stopChat : submit} disabled={busy ? false : !text.trim() || waiting} aria-label={busy ? "Stop generating" : "Send"}
+              title={busy ? "Stop generating" : waiting ? "Waiting for the attached file to finish processing" : "Send"}
               className="rounded-lg bg-accent p-2 text-on-accent transition enabled:hover:brightness-110 disabled:opacity-30">
-              <Icon name="arrow-up" size={16} />
+              <Icon name={busy ? "stop" : "arrow-up"} size={16} />
             </button>
           </div>
         </footer>

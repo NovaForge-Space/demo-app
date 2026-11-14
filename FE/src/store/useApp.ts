@@ -81,6 +81,7 @@ interface AppState {
   saveNow: () => Promise<void>;
 
   send: (text: string) => Promise<void>;
+  stopChat: () => void;
   newConversation: () => void;
   setKbScope: (s: KbScope) => void;
   loadSessions: () => Promise<void>;
@@ -104,6 +105,7 @@ const uid = () => Math.random().toString(36).slice(2, 10);
 const newConvId = () => crypto.randomUUID().replaceAll("-", "");
 const EMPTY: Dashboard = { title: "", widgets: [] };
 const AUTO_NAME = /^(sheet|untitled|dashboard)\s*\d*$/i;
+let activeChatAbort: AbortController | null = null;
 
 const errText = (e: unknown) => errorText(e);
 
@@ -412,6 +414,8 @@ export const useApp = create<AppState>()(
       send: async (text) => {
         const state = get();
         if (!text.trim() || state.busy) return;
+        const controller = new AbortController();
+        activeChatAbort = controller;
         const conversationId = state.conversationId ?? newConvId();
         const attachments = state.sources.filter((s) => s.conversation_id === conversationId && s.status === "ready");
         const userMsg: Message = {
@@ -445,6 +449,7 @@ export const useApp = create<AppState>()(
               } else if (e.event === "final") final = e.data;
               else if (e.event === "error") failure = userMessage(e.data.status ?? 500, e.data.message);
             },
+            controller.signal,
           );
           if (failure || !final) throw new ApiError(failure ?? "The assistant did not respond. Please try again.", 500);
           const res: ChatResponse = final;
@@ -491,12 +496,19 @@ export const useApp = create<AppState>()(
             unread: !s.chatOpen,
           }));
         } catch (e) {
-          set((s) => ({
-            messages: [...s.messages, { id: uid(), role: "assistant", content: errText(e), error: true }],
-          }));
+          if (!controller.signal.aborted) {
+            set((s) => ({
+              messages: [...s.messages, { id: uid(), role: "assistant", content: errText(e), error: true }],
+            }));
+          }
         } finally {
+          if (activeChatAbort === controller) activeChatAbort = null;
           set({ busy: false, trace: [] });
         }
+      },
+
+      stopChat: () => {
+        activeChatAbort?.abort();
       },
 
       setFilter: (f) =>

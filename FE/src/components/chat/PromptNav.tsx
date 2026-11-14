@@ -1,19 +1,17 @@
 "use client";
 
-import { useEffect, useRef, useState, type RefObject } from "react";
+import { useEffect, useState, type RefObject } from "react";
 
 export interface PromptRef {
   id: string;
   text: string;
 }
 
-/** A column of dots on the right edge of the conversation, one per user prompt. Click to jump; while scrolling (or hovering)
- *  the prompt you're currently looking at is shown next to its dot. Each prompt element carries `data-prompt`. */
+/** A column of dots on the right edge of the conversation, one per user prompt. Click to jump;
+ * hover a dot to preview its prompt. Each prompt element carries `data-prompt`. */
 export function PromptNav({ scroller, prompts }: { scroller: RefObject<HTMLDivElement | null>; prompts: PromptRef[] }) {
   const [active, setActive] = useState(0);
   const [hover, setHover] = useState<number | null>(null);
-  const [peek, setPeek] = useState(false);
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const count = prompts.length;
 
   useEffect(() => {
@@ -31,15 +29,11 @@ export function PromptNav({ scroller, prompts }: { scroller: RefObject<HTMLDivEl
     };
     const onScroll = () => {
       locate();
-      setPeek(true);
-      if (timer.current) clearTimeout(timer.current);
-      timer.current = setTimeout(() => setPeek(false), 1400);
     };
     locate();
     el.addEventListener("scroll", onScroll, { passive: true });
     return () => {
       el.removeEventListener("scroll", onScroll);
-      if (timer.current) clearTimeout(timer.current);
     };
   }, [scroller, count]);
 
@@ -55,7 +49,7 @@ export function PromptNav({ scroller, prompts }: { scroller: RefObject<HTMLDivEl
     <nav aria-label="Jump to a prompt" className="pointer-events-none absolute top-1/2 right-1 z-10 flex max-h-[80%] -translate-y-1/2 flex-col items-center gap-1">
       {prompts.map((p, i) => {
         const on = i === active;
-        const label = hover === i || (peek && on);
+        const label = hover === i;
         return (
           <div key={p.id} className="pointer-events-auto relative">
             <button

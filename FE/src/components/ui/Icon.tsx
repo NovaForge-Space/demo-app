@@ -7,7 +7,7 @@ export type IconName =
   | "dollar" | "document" | "filter-slash" | "flame" | "flask" | "tachometer-average" | "menu-dots-vertical"
   | "hastag" | "link" | "spinner" | "map-marker" | "expand" | "compress" | "moon" | "sun" | "cursor-finger"
   | "package" | "paperclip-vertical" | "percentage" | "plus" | "disk" | "search" | "shopping-cart" | "table"
-  | "target" | "thermometer-half" | "trash" | "truck-side" | "cloud-upload" | "users" | "wind" | "cross-small"
+  | "target" | "thermometer-half" | "trash" | "truck-side" | "cloud-upload" | "users" | "wind" | "cross-small" | "stop"
   | "dashboard" | "lock" | "globe" | "user" | "sign-out-alt" | "shield-check" | "settings" | "menu-burger" | "download"
   | "file-pdf" | "copy" | "eye" | "eye-crossed" | "key" | "bell" | "flag" | "user-add" | "folder" | "refresh"
   | "shield-exclamation" | "shield" | "user-gear" | "time-past" | "envelope" | "id-badge" | "fingerprint" | "books"

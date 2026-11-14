@@ -22,11 +22,14 @@ function processName(e: TraceEvent) {
   } satisfies Record<TraceEvent["kind"], string>)[e.kind] ?? "Working on your request";
 }
 
-function Entry({ e }: { e: TraceEvent }) {
+function Entry({ e, live = false }: { e: TraceEvent; live?: boolean }) {
   return (
     <li className="rise flex items-center gap-2.5 text-[12px] leading-snug font-medium text-ink">
       <Icon name={ICONS[e.kind] ?? "info"} size={14} className="shrink-0 text-mute" />
-      <span>{processName(e)}</span>
+      <span>
+        {processName(e)}
+        {live && <span className="typing-dots ml-0.5" aria-hidden><span>.</span><span>.</span><span>.</span></span>}
+      </span>
     </li>
   );
 }
@@ -37,8 +40,8 @@ export function TracePanel({ events, live = false }: { events: TraceEvent[]; liv
   const visible = live ? stages.slice(-1) : stages;
   return (
     <ol className="space-y-2" aria-label="Agent activity">
-      {visible.map((e, i) => <Entry key={`${e.ts}-${i}`} e={e} />)}
-      {!visible.length && live && <li className="flex items-center gap-2.5 text-[12px] text-mute"><Icon name="spinner" size={14} className="animate-spin" /> Preparing your answer</li>}
+      {visible.map((e, i) => <Entry key={`${e.ts}-${i}`} e={e} live={live && i === visible.length - 1} />)}
+      {!visible.length && live && <li className="text-[12px] text-mute">Preparing your answer<span className="typing-dots ml-0.5" aria-hidden><span>.</span><span>.</span><span>.</span></span></li>}
     </ol>
   );
 }
