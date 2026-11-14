@@ -102,7 +102,7 @@ function SheetHeader() {
     <>
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <div className="font-mono text-[10px] tracking-[0.14em] text-mute uppercase">Dashboard sheet</div>
+          <div className="font-mono text-[10px] tracking-[0.14em] text-mute uppercase mt-2"></div>
           {editing ? (
             <input
               autoFocus defaultValue={title} aria-label="Sheet name"

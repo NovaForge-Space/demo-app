@@ -88,8 +88,8 @@ export function Sidebar() {
 
   const views: { id: Tab; label: string; icon: IconName; badge?: number }[] = [
     { id: "dashboard", label: "Dashboard", icon: "dashboard" },
-    { id: "data", label: "Data", icon: "database", badge: sourceCount || undefined },
-    { id: "knowledge", label: "Knowledge", icon: "books" },
+    { id: "data", label: "My Uploads", icon: "database", badge: sourceCount || undefined },
+    ...(isAdmin ? [{ id: "knowledge" as Tab, label: "Knowledge", icon: "books" as IconName }] : []),
   ];
   const label = "px-3 pt-2 pb-1.5 font-mono text-[10px] tracking-[0.14em] text-side-ink2 uppercase";
 
@@ -112,7 +112,7 @@ export function Sidebar() {
       </div>
 
       <nav className="px-2.5" aria-label="Views">
-        {!collapsed && <div className={label}>Views</div>}
+        {!collapsed && <div className={label}></div>}
         <ul className="space-y-0.5">
           {views.map(({ id, label: text, icon, badge }) => (
             <li key={id}>
@@ -132,7 +132,7 @@ export function Sidebar() {
         <div className={`flex items-center ${collapsed ? "justify-center" : "justify-between pr-1"}`}>
           {!collapsed && (
             <span className={label}>
-              Sheets <span className="tabular">{sheets.length || ""}</span>
+              Projects
             </span>
           )}
           <button
@@ -160,7 +160,7 @@ export function Sidebar() {
                       <span className="min-w-0 flex-1">
                         <span className="block truncate">{s.name}</span>
                         <span className={`block truncate text-[11px] ${active ? "text-side-active-ink/70" : "text-side-ink2"}`}>
-                          {s.widget_count} visual{s.widget_count === 1 ? "" : "s"} · {relative(s.updated_at)}
+                          {/* {s.widget_count} visual{s.widget_count === 1 ? "" : "s"} | {relative(s.updated_at)} */}
                         </span>
                       </span>
                     </>

@@ -53,6 +53,10 @@ function Workspace({ userId, isAdmin }: { userId: string; isAdmin: boolean }) {
   }, [isAdmin]);
 
   useEffect(() => {
+    if (!isAdmin && tab === "knowledge") useApp.getState().setTab("dashboard");
+  }, [isAdmin, tab]);
+
+  useEffect(() => {
     if (!processing) return;
     const t = setInterval(refreshSources, 1500);
     return () => clearInterval(t);
@@ -82,7 +86,7 @@ function Workspace({ userId, isAdmin }: { userId: string; isAdmin: boolean }) {
       <main className="flex min-h-0 min-w-0 flex-1 flex-col">
         <Header />
         <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-28">
-          {tab === "dashboard" ? <DashboardCanvas /> : tab === "data" ? <DataManager /> : <KnowledgeView />}
+          {tab === "dashboard" ? <DashboardCanvas /> : tab === "data" ? <DataManager /> : isAdmin ? <KnowledgeView /> : <DashboardCanvas />}
         </div>
       </main>
       <ChatWidget />
